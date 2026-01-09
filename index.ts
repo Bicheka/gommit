@@ -2,6 +2,7 @@ import { Command, Option } from "commander";
 import { spawn } from "bun";
 import { exists } from "node:fs/promises";
 import { join } from "node:path";
+import { generateText } from "./ollama";
 const program = new Command();
 
 program
@@ -31,6 +32,8 @@ program
       console.log("At least one option must be provided -s or -a");
     } else {
       if (options.staged) {
+        const response = await sendChagesToAi();
+        console.log(response);
       } else if (options.all) {
         // stage untracked files
         stageUntracked();
@@ -43,13 +46,28 @@ program
 
 await program.parseAsync();
 
-async function sendChagesToAi() {
+async function sendChagesToAi(): Promise<string> {
   // get git staged changes
   const changes = await getChanges("--staged");
   if (!changes) {
     console.log("Working tree clean");
+    process.exit(1);
   } else {
     // send changes to AI model to create a commit message
+    const prompt = `
+    You are a senior software engineer and expert at writing git commit messages.
+
+    - Read the staged changes provided below.
+    - Generate a **concise commit message** that accurately describes the changes.
+    - Use **imperative mood**.
+    - Use **Conventional Commit format** if possible (feat, fix, chore, etc.).
+    - Do **NOT** include any explanations, summaries, or extra text — only output the commit message.
+
+    Staged changes:
+    ${changes}
+    `;
+
+    return await generateText(prompt);
   }
 }
 
