@@ -1,37 +1,74 @@
-// import { Command } from "commander";
-// const program = new Command();
-
-// program
-//   .name("string-util")
-//   .description("CLI to some JavaScript string utilities")
-//   .version("0.8.0");
-
-// program
-//   .command("split")
-//   .description("Split a string into substrings and display as an array")
-//   .argument("<string>", "string to split")
-//   .option("--first", "display just the first substring")
-//   .option("-s, --separator <char>", "separator character", ",")
-//   .action((str, options) => {
-//     const limit = options.first ? 1 : undefined;
-//     console.log(str.split(options.separator, limit));
-//   });
-
-// program.parse();
-
+import { Command, Option } from "commander";
 import { spawn } from "bun";
+import { exists } from "node:fs/promises";
+import { join } from "node:path";
+const program = new Command();
 
-const proc = spawn({
-  cmd: ["git", "diff", "HEAD"],
-  stdout: "pipe",
-  stderr: "pipe",
-});
+program
+  .name("gommit")
+  .description("Tool to make creating commit messages easier")
+  .version("0.1.0");
 
-const output = await new Response(proc.stdout).text();
+program
+  .addOption(new Option("-s, --staged", "Only staged changes").conflicts("all"))
+  .addOption(new Option("-a, --all", "All changes staged and unstaged"))
+  .addOption(new Option("-c, --commit", "Use generated message to commit"))
+  .addOption(
+    new Option(
+      "-d, --directory <directory>",
+      "Specific directory path to git repository",
+    ),
+  )
+  .action(async (options) => {
+    if (options.directory) {
+      process.chdir(options.directory);
+    }
+    console.log("Working on directory: " + process.cwd());
 
-if (output.trim().length === 0) {
-  console.log("Working tree clean");
-} else {
-  console.log("Uncommitted changes:");
-  console.log(output);
+    if (!(await isGitRepo(options.directory))) {
+      console.log(options.directory + " is not a git repository");
+    } else if (!options.staged && !options.all) {
+      console.log("At least one option must be provided -s or -a");
+    } else {
+      if (options.staged) {
+      } else if (options.all) {
+        // stage untracked files
+        stageUntracked();
+      }
+
+      if (options.commit) {
+      }
+    }
+  });
+
+await program.parseAsync();
+
+async function sendChagesToAi() {
+  // get git staged changes
+  const changes = await getChanges("--staged");
+  if (!changes) {
+    console.log("Working tree clean");
+  } else {
+    // send changes to AI model to create a commit message
+  }
+}
+
+async function stageUntracked() {
+  spawn({ cmd: ["git", "add", "."] });
+}
+
+async function getChanges(option: string): Promise<string> {
+  const proc = spawn({
+    cmd: ["git", "diff", option],
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  return await new Response(proc.stdout).text();
+}
+
+async function isGitRepo(directory?: string): Promise<boolean> {
+  directory ??= process.cwd();
+  const gitFolder = join(directory, ".git");
+  return await exists(gitFolder);
 }
