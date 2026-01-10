@@ -3,6 +3,7 @@ import { spawn } from "bun";
 import { exists } from "node:fs/promises";
 import { join } from "node:path";
 import { generateText } from "./ollama";
+import { confirmPrompt, getIssueNumber } from "./prompt";
 const program = new Command();
 
 program
@@ -31,15 +32,31 @@ program
     } else if (!options.staged && !options.all) {
       console.log("At least one option must be provided -s or -a");
     } else {
+      let commitMessage = "";
+      
       if (options.staged) {
-        const response = await sendChagesToAi();
-        console.log(response);
+        commitMessage = await sendChagesToAi();
+        console.log("\nGenerated commit message:");
+        console.log(commitMessage);
       } else if (options.all) {
         // stage untracked files
-        stageUntracked();
+        await stageUntracked();
+        commitMessage = await sendChagesToAi();
+        console.log("\nGenerated commit message:");
+        console.log(commitMessage);
+      }
+
+      // Ask about issue linking
+      const issueReference = await promptForIssueReference();
+      if (issueReference) {
+        commitMessage = `${commitMessage}\n\n${issueReference}`;
+        console.log("\nUpdated commit message:");
+        console.log(commitMessage);
       }
 
       if (options.commit) {
+        await executeCommit(commitMessage);
+        console.log("\n✅ Commit created successfully!");
       }
     }
   });
@@ -72,7 +89,12 @@ async function sendChagesToAi(): Promise<string> {
 }
 
 async function stageUntracked() {
-  spawn({ cmd: ["git", "add", "."] });
+  const proc = spawn({ 
+    cmd: ["git", "add", "."],
+    stdout: "pipe",
+    stderr: "pipe"
+  });
+  await proc.exited;
 }
 
 async function getChanges(option: string): Promise<string> {
@@ -89,4 +111,49 @@ async function isGitRepo(directory?: string): Promise<boolean> {
   directory ??= process.cwd();
   const gitFolder = join(directory, ".git");
   return await exists(gitFolder);
+}
+
+/**
+ * Prompts user for issue reference and returns the appropriate GitHub keyword
+ * @returns Issue reference string (e.g., "Closes #123" or "Refs #456") or null
+ */
+async function promptForIssueReference(): Promise<string | null> {
+  console.log(); // Add spacing
+  const isRelated = await confirmPrompt("Is this commit related to an issue? (y/n): ");
+  
+  if (!isRelated) {
+    return null;
+  }
+  
+  const issueNumber = await getIssueNumber();
+  
+  if (!issueNumber) {
+    return null;
+  }
+  
+  const shouldClose = await confirmPrompt("Should this commit close the issue? (y/n): ");
+  
+  if (shouldClose) {
+    return `Closes #${issueNumber}`;
+  } else {
+    return `Refs #${issueNumber}`;
+  }
+}
+
+/**
+ * Executes git commit with the provided message
+ */
+async function executeCommit(message: string): Promise<void> {
+  const proc = spawn({
+    cmd: ["git", "commit", "-m", message],
+    stdout: "pipe",
+    stderr: "pipe",
+  });
+
+  await proc.exited;
+  
+  if (proc.exitCode !== 0) {
+    const error = await new Response(proc.stderr).text();
+    throw new Error(`Git commit failed: ${error}`);
+  }
 }
