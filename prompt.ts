@@ -1,44 +1,44 @@
-import { createInterface } from "node:readline";
+import { confirm, text, isCancel, cancel } from "@clack/prompts";
 
 /**
- * Prompts the user with a question and returns their input
+ * Prompts the user with a yes/no question using Clack
+ * @returns true if user confirms, false otherwise, exits on cancel
  */
-export async function prompt(question: string): Promise<string> {
-  const rl = createInterface({
-    input: process.stdin,
-    output: process.stdout,
+export async function confirmPrompt(message: string): Promise<boolean> {
+  const answer = await confirm({
+    message,
   });
 
-  return new Promise((resolve) => {
-    rl.question(question, (answer) => {
-      rl.close();
-      resolve(answer.trim());
-    });
-  });
+  if (isCancel(answer)) {
+    cancel("Operation cancelled.");
+    process.exit(0);
+  }
+
+  return answer as boolean;
 }
 
 /**
- * Prompts the user with a yes/no question
- * @returns true if user answers 'y' or 'yes' (case insensitive), false otherwise
- */
-export async function confirmPrompt(question: string): Promise<boolean> {
-  const answer = await prompt(question);
-  return answer.toLowerCase() === "y" || answer.toLowerCase() === "yes";
-}
-
-/**
- * Prompts the user for an issue number
+ * Prompts the user for an issue number using Clack
  * @returns The issue number as a string, or null if invalid
  */
 export async function getIssueNumber(): Promise<string | null> {
-  const answer = await prompt("Enter the issue number: ");
-  const issueNum = answer.trim();
-  
-  // Validate that it's a number
-  if (issueNum && /^\d+$/.test(issueNum)) {
-    return issueNum;
+  const issueNum = await text({
+    message: "Enter the issue number:",
+    placeholder: "e.g., 5",
+    validate(value) {
+      if (!value || value.trim().length === 0) {
+        return "Issue number is required.";
+      }
+      if (!/^\d+$/.test(value.trim())) {
+        return "Issue number must be a valid number.";
+      }
+    },
+  });
+
+  if (isCancel(issueNum)) {
+    cancel("Operation cancelled.");
+    process.exit(0);
   }
-  
-  console.log("Invalid issue number. Please enter a valid number.");
-  return null;
+
+  return (issueNum as string).trim();
 }

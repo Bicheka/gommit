@@ -4,6 +4,7 @@ import { exists } from "node:fs/promises";
 import { join } from "node:path";
 import { generateText } from "./ollama";
 import { confirmPrompt, getIssueNumber } from "./prompt";
+import { intro, outro, log, spinner } from "@clack/prompts";
 const program = new Command();
 
 program
@@ -22,42 +23,49 @@ program
     ),
   )
   .action(async (options) => {
+    intro("gommit");
+
     if (options.directory) {
       process.chdir(options.directory);
     }
-    console.log("Working on directory: " + process.cwd());
 
     if (!(await isGitRepo(options.directory))) {
-      console.log(options.directory + " is not a git repository");
-    } else if (!options.staged && !options.all) {
-      console.log("At least one option must be provided -s or -a");
+      log.error(options.directory + " is not a git repository");
+      process.exit(1);
+    }
+
+    if (!options.staged && !options.all) {
+      log.error("At least one option must be provided -s or -a");
+      process.exit(1);
+    }
+
+    let commitMessage = "";
+    
+    if (options.staged) {
+      commitMessage = await sendChagesToAi();
+      log.step("Generated commit message:");
+      console.log(commitMessage);
+    } else if (options.all) {
+      // stage untracked files
+      await stageUntracked();
+      commitMessage = await sendChagesToAi();
+      log.step("Generated commit message:");
+      console.log(commitMessage);
+    }
+
+    // Ask about issue linking
+    const issueReference = await promptForIssueReference();
+    if (issueReference) {
+      commitMessage = `${commitMessage}\n\n${issueReference}`;
+      log.step("Updated commit message:");
+      console.log(commitMessage);
+    }
+
+    if (options.commit) {
+      await executeCommit(commitMessage);
+      outro("Commit created successfully!");
     } else {
-      let commitMessage = "";
-      
-      if (options.staged) {
-        commitMessage = await sendChagesToAi();
-        console.log("\nGenerated commit message:");
-        console.log(commitMessage);
-      } else if (options.all) {
-        // stage untracked files
-        await stageUntracked();
-        commitMessage = await sendChagesToAi();
-        console.log("\nGenerated commit message:");
-        console.log(commitMessage);
-      }
-
-      // Ask about issue linking
-      const issueReference = await promptForIssueReference();
-      if (issueReference) {
-        commitMessage = `${commitMessage}\n\n${issueReference}`;
-        console.log("\nUpdated commit message:");
-        console.log(commitMessage);
-      }
-
-      if (options.commit) {
-        await executeCommit(commitMessage);
-        console.log("\n✅ Commit created successfully!");
-      }
+      outro("Commit message generated. Use -c flag to commit.");
     }
   });
 
@@ -67,25 +75,31 @@ async function sendChagesToAi(): Promise<string> {
   // get git staged changes
   const changes = await getChanges("--staged");
   if (!changes) {
-    console.log("Working tree clean");
+    log.error("Working tree clean");
     process.exit(1);
-  } else {
-    // send changes to AI model to create a commit message
-    const prompt = `
-    You are a senior software engineer and expert at writing git commit messages.
-
-    - Read the staged changes provided below.
-    - Generate a **concise commit message** that accurately describes the changes.
-    - Use **imperative mood**.
-    - Use **Conventional Commit format** if possible (feat, fix, chore, etc.).
-    - Do **NOT** include any explanations, summaries, or extra text — only output the commit message.
-
-    Staged changes:
-    ${changes}
-    `;
-
-    return await generateText(prompt);
   }
+
+  const s = spinner();
+  s.start("Generating commit message...");
+
+  // send changes to AI model to create a commit message
+  const prompt = `
+  You are a senior software engineer and expert at writing git commit messages.
+
+  - Read the staged changes provided below.
+  - Generate a **concise commit message** that accurately describes the changes.
+  - Use **imperative mood**.
+  - Use **Conventional Commit format** if possible (feat, fix, chore, etc.).
+  - Do **NOT** include any explanations, summaries, or extra text — only output the commit message.
+
+  Staged changes:
+  ${changes}
+  `;
+
+  const message = await generateText(prompt);
+  s.stop("Commit message generated");
+  
+  return message;
 }
 
 async function stageUntracked() {
@@ -118,8 +132,7 @@ async function isGitRepo(directory?: string): Promise<boolean> {
  * @returns Issue reference string (e.g., "Closes #123" or "Refs #456") or null
  */
 async function promptForIssueReference(): Promise<string | null> {
-  console.log(); // Add spacing
-  const isRelated = await confirmPrompt("Is this commit related to an issue? (y/n): ");
+  const isRelated = await confirmPrompt("Is this commit related to an issue?");
   
   if (!isRelated) {
     return null;
@@ -131,7 +144,7 @@ async function promptForIssueReference(): Promise<string | null> {
     return null;
   }
   
-  const shouldClose = await confirmPrompt("Should this commit close the issue? (y/n): ");
+  const shouldClose = await confirmPrompt("Should this commit close the issue?");
   
   if (shouldClose) {
     return `Closes #${issueNumber}`;
