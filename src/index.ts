@@ -3,6 +3,7 @@ import { spawn } from "bun";
 import { exists } from "node:fs/promises";
 import { join } from "node:path";
 import { generateText } from "./ollama";
+import { getConfig } from "./config/set-up";
 const program = new Command();
 
 program
@@ -21,6 +22,8 @@ program
     ),
   )
   .action(async (options) => {
+    const config = await getConfig();
+
     if (options.directory) {
       process.chdir(options.directory);
     }
