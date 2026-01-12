@@ -1,19 +1,24 @@
 {
-  "name": "gommit",
-  "module": "index.ts",
-  "type": "module",
-  "private": true,
-  "devDependencies": {
-    "@types/bun": "latest"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "@clack/prompts": "^0.11.0",
-    "@iarna/toml": "^2.2.5",
-    "commander": "^14.0.2",
-    "env-paths": "^3.0.0",
-    "zod": "^4.3.5"
-  }
+	"name": "gommit",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"lint-format": "biome check --write",
+		"lint": "biome lint --write"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.3.11",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"@clack/prompts": "^0.11.0",
+		"@iarna/toml": "^2.2.5",
+		"commander": "^14.0.2",
+		"env-paths": "^3.0.0",
+		"zod": "^4.3.5"
+	}
 }
