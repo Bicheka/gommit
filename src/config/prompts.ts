@@ -5,6 +5,14 @@ export async function wizard(path: string): Promise<WizardInput> {
 	intro(`gommit configuration wizard`);
 	const prompts = await group(
 		{
+			provider: () =>
+				text({
+					message: "Which AI provider are you using?",
+					placeholder: "ollama | openai | gemini ...",
+					validate(value) {
+						if (value.length === 0) return `Value is required!`;
+					},
+				}),
 			aiModel: () =>
 				text({
 					message: "Which AI model are you using?",

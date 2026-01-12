@@ -34,6 +34,7 @@ function normalizeWizardInput(input: WizardInput): Config {
 
 	// merge defaults for missing values
 	const configObj: Config = {
+		provider: parsedInput.provider,
 		aiModel: parsedInput.aiModel,
 		prompt: DEFAULTS.prompt,
 		apiUrl: parsedInput.apiUrl ?? DEFAULTS.AI_API_URL,

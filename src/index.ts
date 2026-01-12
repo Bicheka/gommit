@@ -2,8 +2,8 @@ import { exists } from "node:fs/promises";
 import { join } from "node:path";
 import { spawn } from "bun";
 import { Command, Option } from "commander";
+import { buildAIClient } from "./ai";
 import { getConfig } from "./config/set-up";
-import { generateText } from "./ollama";
 
 const program = new Command();
 
@@ -56,23 +56,14 @@ async function sendChagesToAi(): Promise<string> {
 	if (!changes) {
 		console.log("Working tree clean");
 		process.exit(1);
-	} else {
-		// send changes to AI model to create a commit message
-		const prompt = `
-    You are a senior software engineer and expert at writing git commit messages.
-
-    - Read the staged changes provided below.
-    - Generate a **concise commit message** that accurately describes the changes.
-    - Use **imperative mood**.
-    - Use **Conventional Commit format** if possible (feat, fix, chore, etc.).
-    - Do **NOT** include any explanations, summaries, or extra text — only output the commit message.
-    
-    Staged changes:
-    ${changes}
-    `;
-
-		return await generateText(prompt);
 	}
+	const config = await getConfig();
+
+	// generate full prompt attatching the changes to the config prompt
+  const fullPrompt = `${config.prompt} \n ${changes}`;
+
+	const ai = buildAIClient(config.provider);
+	return await ai.generateCommitMessage(config, fullPrompt);
 }
 
 async function stageUntracked() {
