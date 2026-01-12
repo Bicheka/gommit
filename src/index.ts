@@ -60,7 +60,7 @@ async function sendChagesToAi(): Promise<string> {
 	const config = await getConfig();
 
 	// generate full prompt attatching the changes to the config prompt
-  const fullPrompt = `${config.prompt} \n ${changes}`;
+	const fullPrompt = `${config.prompt} \n ${changes}`;
 
 	const ai = buildAIClient(config.provider);
 	return await ai.generateCommitMessage(config, fullPrompt);
