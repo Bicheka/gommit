@@ -27,7 +27,7 @@ To run the project, use:
 ### Options
 
 - `-a, --all`  
-  Use **all changes**, including staged and unstaged files.
+  It will stage all changes before proceeding.
 
 - `-c, --commit`  
   Automatically create a Git commit using the generated message.
