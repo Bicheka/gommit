@@ -26,10 +26,6 @@ To run the project, use:
 
 ### Options
 
-- `-s, --staged`  
-  Use **only staged changes** to generate the commit message.  
-  Conflicts with `--all`.
-
 - `-a, --all`  
   Use **all changes**, including staged and unstaged files.
 

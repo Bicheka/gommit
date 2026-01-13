@@ -41,11 +41,6 @@ async function run(options: {
 		process.exit(1);
 	}
 
-	if (!options.staged && !options.all) {
-		console.error("At least one option must be provided: -s or -a");
-		process.exit(1);
-	}
-
 	if (options.all) {
 		await stageAll();
 	}
