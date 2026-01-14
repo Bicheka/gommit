@@ -59,7 +59,7 @@ async function run(options: {
 
 		commitMessage = await generateCommitMessage();
 
-    s.stop(commitMessage);
+		s.stop(commitMessage);
 
 		if (options.commit) {
 			await commit(commitMessage);
