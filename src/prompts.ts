@@ -1,4 +1,12 @@
-import { cancel, group, intro, outro, text } from "@clack/prompts";
+import {
+	cancel,
+	group,
+	intro,
+	isCancel,
+	outro,
+	select,
+	text,
+} from "@clack/prompts";
 import { type WizardInput, WizardInputSchema } from "./config/schema";
 
 export async function wizard(path: string): Promise<WizardInput> {
@@ -48,4 +56,25 @@ export async function wizard(path: string): Promise<WizardInput> {
 	const wizardInput = WizardInputSchema.parse(prompts);
 
 	return wizardInput;
+}
+
+export async function confirmAction() {
+	const options = [
+		{ value: "commit", label: "✅ Commit" },
+		{ value: "copy", label: "📋 Copy to clipboard" },
+		{ value: "regen", label: "🔄 Regenerate message" },
+		{ value: "cancel", label: "❌ Cancel" },
+	];
+
+	const response = await select({
+		message: "Would you like to: ",
+		options,
+	});
+
+	if (isCancel(response)) {
+		cancel("Operation cancelled.");
+		process.exit(0);
+	}
+	
+  return response;
 }

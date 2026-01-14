@@ -15,7 +15,15 @@ export async function commit(message: string) {
 }
 
 export async function getDiff(): Promise<string> {
-	const cmd = ["git", "diff", "--staged"];
+	const args = [
+		"diff",
+		"--staged",
+		"--",
+		".",
+		":(exclude)*.lock",
+		":(exclude)pnpm-lock.yaml",
+	];
+	const cmd = ["git", ...args];
 
 	const proc = spawn({
 		cmd,

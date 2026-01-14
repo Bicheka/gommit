@@ -1,6 +1,9 @@
+import { log } from "@clack/prompts";
+import clipboard from "clipboardy";
 import { Command, Option } from "commander";
 import { generateCommitMessage } from "./ai";
 import { commit, isGitRepo, stageAll } from "./git-helpers";
+import { confirmAction } from "./prompts";
 
 const program = new Command();
 
@@ -45,11 +48,31 @@ async function run(options: {
 		await stageAll();
 	}
 
-	const commitMessage = await generateCommitMessage();
+	let commitMessage = "";
+	let action: string | symbol = "";
+	while (true) {
+		commitMessage = await generateCommitMessage();
 
-	console.log(commitMessage);
+		log.success(commitMessage);
 
-	if (options.commit) {
-		await commit(commitMessage);
+		action = await confirmAction();
+
+		if (action === "commit") {
+			await commit(commitMessage);
+			break;
+		}
+
+		if (action === "copy") {
+			await clipboard.write(commitMessage);
+			break;
+		}
+
+		if (action === "cancel") {
+			process.exit(0);
+		}
+
+		if (action === "regen") {
+			log.info("Regenerating");
+		}
 	}
 }
