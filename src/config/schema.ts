@@ -16,5 +16,10 @@ export const WizardInputSchema = z.object({
 	numberOfResponses: z.string(),
 });
 
+export const ReferIssues = z.object({
+	issues: z.string().optional(),
+});
+
 export type WizardInput = z.infer<typeof WizardInputSchema>;
 export type Config = z.infer<typeof ConfigSchema>;
+export type Issues = z.infer<typeof ReferIssues>;

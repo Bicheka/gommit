@@ -5,7 +5,7 @@ import color from "picocolors";
 import { generateCommitMessage } from "./ai";
 import { getConfig } from "./config/set-up";
 import { commit, isGitRepo, stageAll } from "./git-helpers";
-import { confirmAction } from "./prompts";
+import { confirmAction, referenceIssues } from "./prompts";
 
 const program = new Command();
 
@@ -57,11 +57,15 @@ async function run(options: {
 
 	const config = await getConfig();
 
+	const issues = await referenceIssues();
+
 	const s = spinner();
 	while (true) {
 		s.start("Generating");
 
 		commitMessage = await generateCommitMessage(config);
+
+		commitMessage = appendIssues(commitMessage, issues.issues);
 
 		s.stop(commitMessage);
 
@@ -92,4 +96,11 @@ async function run(options: {
 	}
 
 	outro("All done!");
+}
+
+function appendIssues(message: string, issues?: string): string {
+	message = message.trim();
+	if (!/[.!?]$/.test(message)) message += ".";
+	if (issues) message += ` ${issues}`;
+	return message;
 }
