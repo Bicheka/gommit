@@ -2,7 +2,7 @@ import { exists } from "node:fs/promises";
 import { join } from "node:path";
 import * as toml from "@iarna/toml";
 import envPaths from "env-paths";
-import { wizard } from "./prompts";
+import { wizard } from "../prompts";
 import {
 	type Config,
 	ConfigSchema,

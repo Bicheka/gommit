@@ -1,5 +1,5 @@
 import { cancel, group, intro, outro, text } from "@clack/prompts";
-import { type WizardInput, WizardInputSchema } from "./schema";
+import { type WizardInput, WizardInputSchema } from "./config/schema";
 
 export async function wizard(path: string): Promise<WizardInput> {
 	intro(`gommit configuration wizard`);
