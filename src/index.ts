@@ -1,4 +1,4 @@
-import { intro, log, outro } from "@clack/prompts";
+import { intro, log, outro, spinner } from "@clack/prompts";
 import clipboard from "clipboardy";
 import { Command, Option } from "commander";
 import color from "picocolors";
@@ -23,7 +23,6 @@ program
 		),
 	)
 	.action(run);
-
 
 await program.parseAsync();
 
@@ -54,10 +53,13 @@ async function run(options: {
 
 	let commitMessage = "";
 	let action: string | symbol = "";
+	const s = spinner();
 	while (true) {
+		s.start("Generating");
+
 		commitMessage = await generateCommitMessage();
 
-		log.info(commitMessage);
+    s.stop(commitMessage);
 
 		if (options.commit) {
 			await commit(commitMessage);
