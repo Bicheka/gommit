@@ -37,7 +37,7 @@ async function run(options: {
 	}
 
 	const cwd = process.cwd();
-	console.log(`Working on directory: ${cwd}`);
+	log.message(`Working on directory: ${cwd}`);
 
 	if (!(await isGitRepo(cwd))) {
 		console.error("Not a git repository");
@@ -53,7 +53,7 @@ async function run(options: {
 	while (true) {
 		commitMessage = await generateCommitMessage();
 
-		log.success(commitMessage);
+		log.message(commitMessage);
 
 		action = await confirmAction();
 
