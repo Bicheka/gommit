@@ -1,6 +1,7 @@
-import { log } from "@clack/prompts";
+import { intro, log, outro } from "@clack/prompts";
 import clipboard from "clipboardy";
 import { Command, Option } from "commander";
+import color from "picocolors";
 import { generateCommitMessage } from "./ai";
 import { commit, isGitRepo, stageAll } from "./git-helpers";
 import { confirmAction } from "./prompts";
@@ -23,6 +24,7 @@ program
 	)
 	.action(run);
 
+
 await program.parseAsync();
 
 async function run(options: {
@@ -31,6 +33,8 @@ async function run(options: {
 	commit?: boolean;
 	directory?: string;
 }) {
+	intro(color.inverse("gommit"));
+
 	// if directory is defined change the current working directory to that directory
 	if (options.directory) {
 		process.chdir(options.directory);
@@ -80,4 +84,6 @@ async function run(options: {
 			log.info("Regenerating");
 		}
 	}
+
+	outro("All done!");
 }
