@@ -21,8 +21,7 @@ function buildAIClient(provider: string): AIClient {
 	return client;
 }
 
-export async function generateCommitMessage(
-): Promise<string> {
+export async function generateCommitMessage(): Promise<string> {
 	const changes = await getDiff();
 
 	if (!changes.trim()) {
