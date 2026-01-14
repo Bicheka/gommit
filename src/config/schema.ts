@@ -12,8 +12,8 @@ export const ConfigSchema = z.object({
 export const WizardInputSchema = z.object({
 	provider: z.string(),
 	aiModel: z.string(),
-	apiUrl: z.string().optional(),
-	numberOfResponses: z.string().optional(),
+	apiUrl: z.string(),
+	numberOfResponses: z.string(),
 });
 
 export type WizardInput = z.infer<typeof WizardInputSchema>;

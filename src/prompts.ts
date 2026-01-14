@@ -17,28 +17,26 @@ export async function wizard(path: string): Promise<WizardInput> {
 				text({
 					message: "Which AI provider are you using?",
 					placeholder: "ollama | openai | gemini ...",
-					validate(value) {
-						if (value.length === 0) return `Value is required!`;
-					},
+					defaultValue: "ollama",
 				}),
 			aiModel: () =>
 				text({
 					message: "Which AI model are you using?",
-					placeholder: "e.g llama3",
-					validate(value) {
-						if (value.length === 0) return `Value is required!`;
-					},
+					placeholder: "gpt-oss:20b",
+					defaultValue: "gpt-oss:20b"
 				}),
 			apiUrl: () =>
 				text({
 					message: "What is the AI API URL?",
 					placeholder: "http://localhost:11434/api/generate",
+					defaultValue: "http://localhost:11434/api/generate"
 				}),
 			numberOfResponses: () =>
 				text({
 					message:
 						"How many responses would you like to get from the AI model (min: 1)",
 					placeholder: "1",
+					defaultValue: "1"
 				}),
 		},
 		{

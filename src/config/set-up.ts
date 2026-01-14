@@ -24,7 +24,6 @@ const DEFAULTS = {
 
   Staged changes:
   `,
-	AI_API_URL: "http://localhost:11434/api/generate",
 	gitArgs: [
 		"diff",
 		"--staged",
@@ -33,7 +32,6 @@ const DEFAULTS = {
 		":(exclude)*.lock",
 		":(exclude)pnpm-lock.yaml",
 	],
-	numberOfResponses: 1,
 };
 
 function normalizeWizardInput(input: WizardInput): Config {
@@ -45,10 +43,8 @@ function normalizeWizardInput(input: WizardInput): Config {
 		provider: parsedInput.provider,
 		aiModel: parsedInput.aiModel,
 		prompt: DEFAULTS.prompt,
-		apiUrl: parsedInput.apiUrl ?? DEFAULTS.AI_API_URL,
-		numberOfResponses: parsedInput.numberOfResponses
-			? Number(parsedInput.numberOfResponses)
-			: DEFAULTS.numberOfResponses,
+		apiUrl: parsedInput.apiUrl,
+		numberOfResponses: Number(parsedInput.numberOfResponses),
 		gitArgs: DEFAULTS.gitArgs,
 	};
 
