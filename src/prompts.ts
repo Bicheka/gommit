@@ -75,6 +75,6 @@ export async function confirmAction() {
 		cancel("Operation cancelled.");
 		process.exit(0);
 	}
-	
-  return response;
+
+	return response;
 }
