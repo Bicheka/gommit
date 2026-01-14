@@ -25,6 +25,14 @@ const DEFAULTS = {
   Staged changes:
   `,
 	AI_API_URL: "http://localhost:11434/api/generate",
+	gitArgs: [
+		"diff",
+		"--staged",
+		"--",
+		".",
+		":(exclude)*.lock",
+		":(exclude)pnpm-lock.yaml",
+	],
 	numberOfResponses: 1,
 };
 
@@ -41,6 +49,7 @@ function normalizeWizardInput(input: WizardInput): Config {
 		numberOfResponses: parsedInput.numberOfResponses
 			? Number(parsedInput.numberOfResponses)
 			: DEFAULTS.numberOfResponses,
+		gitArgs: DEFAULTS.gitArgs,
 	};
 
 	// validate full config against ConfigSchema

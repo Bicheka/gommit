@@ -1,5 +1,4 @@
 import type { Config } from "../config/schema";
-import { getConfig } from "../config/set-up";
 import { getDiff } from "../git-helpers";
 import { OllamaClient } from "./ollama";
 export interface AIClient {
@@ -21,15 +20,14 @@ function buildAIClient(provider: string): AIClient {
 	return client;
 }
 
-export async function generateCommitMessage(): Promise<string> {
-	const changes = await getDiff();
+export async function generateCommitMessage(config: Config): Promise<string> {
+	const changes = await getDiff(config.gitArgs);
 
 	if (!changes.trim()) {
 		console.error("Working tree clean");
 		process.exit(1);
 	}
 
-	const config = await getConfig();
 	const ai = buildAIClient(config.provider);
 
 	const prompt = `${config.prompt}\n\n${changes}`;

@@ -22,15 +22,7 @@ export async function commit(message: string) {
 	if ((await stderr).trim()) log.error(await stderr);
 }
 
-export async function getDiff(): Promise<string> {
-	const args = [
-		"diff",
-		"--staged",
-		"--",
-		".",
-		":(exclude)*.lock",
-		":(exclude)pnpm-lock.yaml",
-	];
+export async function getDiff(args: string[]): Promise<string> {
 	const cmd = ["git", ...args];
 
 	const proc = spawn({

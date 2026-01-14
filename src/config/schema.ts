@@ -5,6 +5,7 @@ export const ConfigSchema = z.object({
 	aiModel: z.string(),
 	prompt: z.string(),
 	apiUrl: z.string(),
+	gitArgs: z.array(z.string()),
 	numberOfResponses: z.number().min(1),
 });
 

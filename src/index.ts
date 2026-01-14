@@ -3,6 +3,7 @@ import clipboard from "clipboardy";
 import { Command, Option } from "commander";
 import color from "picocolors";
 import { generateCommitMessage } from "./ai";
+import { getConfig } from "./config/set-up";
 import { commit, isGitRepo, stageAll } from "./git-helpers";
 import { confirmAction } from "./prompts";
 
@@ -53,11 +54,14 @@ async function run(options: {
 
 	let commitMessage = "";
 	let action: string | symbol = "";
+
+	const config = await getConfig();
+
 	const s = spinner();
 	while (true) {
 		s.start("Generating");
 
-		commitMessage = await generateCommitMessage();
+		commitMessage = await generateCommitMessage(config);
 
 		s.stop(commitMessage);
 
