@@ -1,14 +1,14 @@
 import type { Config } from "../config/schema";
 import { getDiff } from "../git-helpers";
 import { OllamaClient } from "./ollama";
+import { OpenAIClient } from "./openai";
 export interface AIClient {
 	generateCommitMessage(config: Config, prompt: string): Promise<string>;
 }
 
 const aiClients: Record<string, AIClient> = {
 	ollama: OllamaClient,
-	// TODO add more providers e.g.
-	// openai:
+	openai: OpenAIClient,
 	// gemini
 	// claude
 	// ...

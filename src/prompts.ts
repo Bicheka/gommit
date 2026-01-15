@@ -37,6 +37,12 @@ export async function wizard(path: string): Promise<WizardInput> {
 					placeholder: "http://localhost:11434/api/generate",
 					defaultValue: "http://localhost:11434/api/generate",
 				}),
+			apiKey: () =>
+				text({
+					message: "What is your API key",
+					placeholder: "asdf2c4cr234fdb45...",
+					defaultValue: "",
+				}),
 			numberOfResponses: () =>
 				text({
 					message:

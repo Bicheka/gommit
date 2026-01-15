@@ -44,6 +44,7 @@ function normalizeWizardInput(input: WizardInput): Config {
 		aiModel: parsedInput.aiModel,
 		prompt: DEFAULTS.prompt,
 		apiUrl: parsedInput.apiUrl,
+		apiKey: parsedInput.apiKey,
 		numberOfResponses: Number(parsedInput.numberOfResponses),
 		gitArgs: DEFAULTS.gitArgs,
 	};
