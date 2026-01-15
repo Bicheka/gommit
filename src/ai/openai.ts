@@ -3,10 +3,7 @@ import type { Config } from "../config/schema";
 import type { AIClient } from ".";
 
 export const OpenAIClient: AIClient = {
-	async generateCommitMessage(
-		config: Config,
-		_prompt: string,
-	): Promise<string> {
+	async generateCommitMessage(config: Config, prompt: string): Promise<string> {
 		if (!config.apiKey) {
 			throw new Error(
 				"OpenAI API key is missing. Set it via `config` or `OPENAI_API_KEY` environment variable.",
@@ -18,7 +15,7 @@ export const OpenAIClient: AIClient = {
 		try {
 			const response = await client.responses.create({
 				model: config.aiModel,
-				input: config.prompt,
+				input: prompt,
 			});
 
 			const outputText = response.output_text?.trim();
