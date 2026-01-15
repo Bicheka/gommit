@@ -22,7 +22,7 @@ export async function wizard(path: string): Promise<WizardInput> {
 			provider: () =>
 				text({
 					message: "Which AI provider are you using?",
-					placeholder: "ollama | openai | gemini ...",
+					placeholder: "ollama | openai | google ...",
 					defaultValue: "ollama",
 				}),
 			aiModel: () =>
