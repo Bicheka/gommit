@@ -1,5 +1,6 @@
 import type { Config } from "../config/schema";
 import { getDiff } from "../git-helpers";
+import { GoogleGenAIClient } from "./google";
 import { OllamaClient } from "./ollama";
 import { OpenAIClient } from "./openai";
 export interface AIClient {
@@ -9,9 +10,7 @@ export interface AIClient {
 const aiClients: Record<string, AIClient> = {
 	ollama: OllamaClient,
 	openai: OpenAIClient,
-	// gemini
-	// claude
-	// ...
+	google: GoogleGenAIClient,
 };
 
 function buildAIClient(provider: string): AIClient {
