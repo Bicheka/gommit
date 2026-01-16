@@ -5,9 +5,10 @@ import type { AIClient } from ".";
 export const OpenAIClient: AIClient = {
 	async generateCommitMessage(config: Config, prompt: string): Promise<string> {
 		if (!config.apiKey) {
-			throw new Error(
+			console.error(
 				"OpenAI API key is missing. Set it via `config` or `OPENAI_API_KEY` environment variable.",
 			);
+      process.exit(1);
 		}
 
 		const client = new OpenAI({ apiKey: config.apiKey });
