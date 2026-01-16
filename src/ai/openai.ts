@@ -8,7 +8,7 @@ export const OpenAIClient: AIClient = {
 			console.error(
 				"OpenAI API key is missing. Set it via `config` or `OPENAI_API_KEY` environment variable.",
 			);
-      process.exit(1);
+			process.exit(1);
 		}
 
 		const client = new OpenAI({ apiKey: config.apiKey });
