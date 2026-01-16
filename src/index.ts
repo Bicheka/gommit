@@ -3,7 +3,13 @@ import clipboard from "clipboardy";
 import { Command, Option } from "commander";
 import color from "picocolors";
 import { generateCommitMessage } from "./ai";
-import { getConfig } from "./config/set-up";
+import {
+	editConfig,
+	getConfig,
+	getKeys,
+	runWizard,
+	setConfig,
+} from "./config/set-up";
 import { commit, isGitRepo, stageAll } from "./git-helpers";
 import { confirmAction, referenceIssues } from "./prompts";
 
@@ -24,6 +30,29 @@ program
 		),
 	)
 	.action(run);
+
+const configCommand = program.command("config");
+
+configCommand
+	.command("wizard")
+	.description("Run setup wizard again")
+	.action(runWizard);
+
+configCommand
+	.command("set")
+	.arguments("<key> <value>")
+	.description("Set a config value")
+	.action(setConfig);
+
+configCommand
+	.command("get keys")
+	.description("Get a list of possible keys")
+	.action(getKeys);
+
+configCommand
+	.command("edit")
+	.description("Edit config in editor")
+	.action(editConfig);
 
 await program.parseAsync();
 
