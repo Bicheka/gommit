@@ -8,9 +8,16 @@ gommit is a CLI tool that helps developers generate high-quality Git commit mess
 - Simplifies Git workflow and improves commit message quality.
 - Lightweight and easy to integrate into your development process.
 
+## Installation
+### Linux / macOS
+`curl -fsSL https://raw.githubusercontent.com/bicheka/gommit/main/install-gommit.sh | bash`
+
+### Windows
+Download the Windows binary from the releases page and add it to your PATH
+
 ## Requirements
 
-- [Bun](https://bun.sh/)
+- [Bun](https://bun.sh/) (for development)
 - [Ollama](https://ollama.com/)
 
 Get the best AI model that your computer can run for better results.
