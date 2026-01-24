@@ -94,6 +94,21 @@ async function run(options: {
 
 		commitMessage = await generateCommitMessage(config);
 
+		if (!commitMessage) {
+			log.error(`
+      Failed to generate a commit message.
+      
+      This usually happens when the AI model couldn't process the diff (too many changes or too complex).
+      
+      Possible fixes:
+      - Reduce the number of staged changes and try again
+      - Use a stronger model or increase the token limit
+      - Check your config for invalid settings
+      `);
+
+			process.exit(1);
+		}
+
 		commitMessage = appendIssues(commitMessage, issues.issues);
 
 		s.stop(commitMessage);
