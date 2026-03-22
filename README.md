@@ -26,7 +26,7 @@ or download the binary from releases and add it to the path manually
 
 Get the best AI model that your computer can run for better results.
 
-## Installation
+## Usage Source
 To install dependencies use:
 
 `bun install`
@@ -34,6 +34,8 @@ To install dependencies use:
 To run the project, use:
 
 `bun src/index.ts [options] [arguments]`
+
+## Usage Binary
 
 ### Options
 
