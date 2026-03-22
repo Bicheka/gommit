@@ -13,7 +13,11 @@ gommit is a CLI tool that helps developers generate high-quality Git commit mess
 `curl -fsSL https://raw.githubusercontent.com/bicheka/gommit/main/install-gommit.sh | sudo bash`
 
 ### Windows
-Download the Windows binary from the releases page and add it to your PATH
+Run this in powershell to install
+```
+iwr -useb https://raw.githubusercontent.com/Bicheka/gommit/main/install.ps1 | iex
+```
+or download the binary from releases and add it to the path manually
 
 ## Requirements
 
