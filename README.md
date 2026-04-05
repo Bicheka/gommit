@@ -10,8 +10,9 @@ gommit is a CLI tool that helps developers generate high-quality Git commit mess
 
 ## Installation
 ### Linux / macOS
-`curl -fsSL https://raw.githubusercontent.com/bicheka/gommit/main/install-gommit.sh | sudo bash`
-
+```
+curl -fsSL https://raw.githubusercontent.com/bicheka/gommit/main/install-gommit.sh | sudo bash
+```
 ### Windows
 Run this in powershell to install
 ```
