@@ -17,46 +17,45 @@ jobs:
       matrix:
         include:
           - os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-            artifact_name: gommit
+            target: bun-linux-x64
             asset_name: gommit-linux-amd64
+            output_name: gommit
 
           - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact_name: gommit
+            target: bun-darwin-x64
             asset_name: gommit-macos-amd64
+            output_name: gommit
 
           - os: macos-latest
-            target: aarch64-apple-darwin
-            artifact_name: gommit
+            target: bun-darwin-arm64
             asset_name: gommit-macos-arm64
+            output_name: gommit
 
           - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact_name: gommit.exe
+            target: bun-windows-x64
             asset_name: gommit-windows-amd64.exe
+            output_name: gommit.exe
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          targets: ${{ matrix.target }}
+          bun-version: latest
 
-      - name: Install musl-tools (Linux only)
-        if: matrix.os == 'ubuntu-latest'
-        run: sudo apt-get update && sudo apt-get install -y musl-tools
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
-      - name: Build project
-        run: cargo build --release --target ${{ matrix.target }}
+      - name: Build binary
+        run: bun build ./src/index.ts --compile --target=${{ matrix.target }} --outfile ${{ matrix.output_name }}
 
       - name: Prepare asset
         shell: bash
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/${{ matrix.artifact_name }} dist/${{ matrix.asset_name }}
+          cp ${{ matrix.output_name }} dist/${{ matrix.asset_name }}
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@v4
@@ -92,12 +91,7 @@ jobs:
       - name: Create GitHub Release and upload assets
         uses: softprops/action-gh-release@v2
         with:
+          name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
           files: |
             release-files/*
-            - name: Create GitHub Release and upload assets
-            uses: softprops/action-gh-release@v2
-            with:
-              name: Release ${{ github.ref_name }}
-              tag_name: ${{ github.ref_name }}
-              files: |
-                release-files/*
