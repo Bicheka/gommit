@@ -1,4 +1,4 @@
-$url = "https://github.com/Bicheka/gommit/releases/latest/download/gommit-windows-x64.exe "
+$url = "https://github.com/Bicheka/gommit/releases/latest/download/gommit-windows-amd64.exe" "
 $dest = "$HOME\AppData\Local\Microsoft\WindowsApps\gommit.exe"
 
 Write-Host "Downloading gommit..." -ForegroundColor Cyan
