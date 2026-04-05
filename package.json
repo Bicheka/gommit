@@ -3,7 +3,7 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "version": "1.0.4",
+  "version": "1.0.5",
   "scripts": {
     "lint-format": "biome check --write",
     "lint": "biome lint --write",
