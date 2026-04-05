@@ -3,13 +3,13 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scripts": {
     "lint-format": "biome check --write",
     "lint": "biome lint --write",
     "release": "bun run commit-release && bun run tag-release",
-    "commit-release": "bun -e \"const v=require('./package.json').version; require('child_process').execSync(`git add package.json && git commit -m 'release: v${v}' || true`, {stdio:'inherit'})\"",
-    "tag-release": "bun -e \"const v=require('./package.json').version; require('child_process').execSync(`git tag v${v} && git push origin main --tags`, {stdio:'inherit'})\"",
+    "commit-release": "bun -e \"const v=require('./package.json').version; require('child_process').execSync('git add package.json && git commit -m \\\"release: v' + v + '\\\" || true', { stdio: 'inherit' })\"",
+    "tag-release": "bun -e \"const v=require('./package.json').version; require('child_process').execSync('git tag v' + v + ' && git push origin main --tags', { stdio: 'inherit' })\"",
     "release:patch": "bun -e \"const fs=require('fs'); const pkg=require('./package.json'); const [a,b,c]=pkg.version.split('.').map(Number); pkg.version=a + '.' + b + '.' + (c + 1); fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\\n');\" && bun run release"
   },
   "devDependencies": {
