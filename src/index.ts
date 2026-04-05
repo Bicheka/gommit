@@ -12,13 +12,13 @@ import {
 } from "./config/set-up";
 import { commit, isGitRepo, stageAll } from "./git-helpers";
 import { confirmAction, referenceIssues } from "./prompts";
-
+import pkg from "../package.json";
 const program = new Command();
 
 program
 	.name("gommit")
 	.description("Tool to make creating commit messages easier")
-	.version("0.1.0");
+	.version(pkg.version);
 
 program
 	.addOption(new Option("-a, --all", "All changes staged and unstaged"))
