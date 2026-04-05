@@ -20,10 +20,13 @@ export async function wizard(path: string): Promise<WizardInput> {
 	const prompts = await group(
 		{
 			provider: () =>
-				text({
-					message: "Which AI provider are you using?",
-					placeholder: "ollama | openai | google ...",
-					defaultValue: "ollama",
+				select({
+					message: "Select an AI provider",
+					options: [
+						{ value: "ollama", label: "Ollama" },
+						{ value: "openai", label: "OpenAI" },
+						{ value: "google", label: "Google" },
+					],
 				}),
 			aiModel: () =>
 				text({
@@ -31,12 +34,17 @@ export async function wizard(path: string): Promise<WizardInput> {
 					placeholder: "gpt-oss:20b",
 					defaultValue: "gpt-oss:20b",
 				}),
-			apiUrl: () =>
-				text({
+			apiUrl: ({ results }) => {
+				if (results.provider !== "ollama") {
+					return undefined;
+				}
+
+				return text({
 					message: "What is the AI API URL?",
 					placeholder: "http://localhost:11434/api/generate",
 					defaultValue: "http://localhost:11434/api/generate",
-				}),
+				});
+			},
 			apiKey: () =>
 				text({
 					message: "What is your API key",
